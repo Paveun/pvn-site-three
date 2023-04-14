@@ -29,16 +29,13 @@ nav {
 nav a {
   text-decoration: none;
   color: white;
+  font-weight: bold;
 }
 
 nav ul {
   list-style: none;
   display: flex;
-  gap: 4rem;
-}
-
-.mainlink {
-  font-weight: bold;
+  gap: 2rem;
 }
 
 .title {
