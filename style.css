@@ -24,18 +24,21 @@ nav {
   padding: 2rem 3rem;
   display: flex;
   justify-content: space-between;
+  font-size: 1rem;
 }
 
 nav a {
   text-decoration: none;
   color: white;
-  font-weight: bold;
+  font-weight: normal;
+  font-size: 1rem;
 }
 
 nav ul {
   list-style: none;
   display: flex;
   gap: 1rem;
+  font-size: 1rem;
 }
 
 .title {
