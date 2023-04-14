@@ -24,7 +24,6 @@ nav {
   padding: 2rem 3rem;
   display: flex;
   justify-content: space-between;
-  font-size: 1rem;
 }
 
 nav a {
@@ -32,12 +31,17 @@ nav a {
   color: white;
   font-weight: normal;
   font-size: 1rem;
+  transition: 0.7s;
+}
+
+nav a:hover {
+  color:rgb(244, 23, 11);
 }
 
 nav ul {
   list-style: none;
   display: flex;
-  gap: 1rem;
+  gap: 2rem;
   font-size: 1rem;
 }
 
