@@ -21,7 +21,7 @@ nav {
   color: white;
   z-index: 2;
   position: relative;
-  padding: 4rem 8rem;
+  padding: 2rem 3rem;
   display: flex;
   justify-content: space-between;
 }
@@ -35,7 +35,7 @@ nav a {
 nav ul {
   list-style: none;
   display: flex;
-  gap: 2rem;
+  gap: 1rem;
 }
 
 .title {
