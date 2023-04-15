@@ -94,3 +94,16 @@ const tl = gsap.timeline({defaults: {duration: 1}});
 tl.fromTo("nav", {y: "-100%"}, {y: "0%"});
 tl.fromTo(".title", {opacity: 0}, {opacity: 1});
 tl.fromTo(".sub", {opacity: 0}, {opacity: 1}, "-=1");
+
+const button = document.querySelector("button");
+
+let animation = null;
+
+button.addEventListener("click", () => {
+  if (animation) {
+    animation.kill();
+  }
+  animation = gsap.timeline();
+  animation.to(controls, {duration: 1, autoRotateSpeed: 15 });
+  animation.to(controls, {duration: 1.5, autoRotateSpeed: 0.5 });
+});
