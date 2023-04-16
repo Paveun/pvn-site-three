@@ -43,7 +43,7 @@ const sizes = {
 }
 
 //camera
-const camera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height, 0.1, 1500);
+const camera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height, 0.1, 150);
 camera.position.z = 5;
 camera.position.y = 1.5;
 scene.add(camera);
@@ -91,8 +91,9 @@ loop();
 //timelines
 const tl = gsap.timeline({defaults: {duration: 1}});
 //tl.fromTo(camera.position.z, 100, 5);
-tl.fromTo("nav", {y: "-100%"}, {y: "0%"});
-tl.fromTo(".title", {opacity: 0}, {opacity: 1});
+tl.fromTo(camera.position, {z: 0}, {z: 5, duration: 2});
+tl.fromTo("nav", {y: "-100%"}, {y: "0%"}, "-=1.5");
+tl.fromTo(".title", {opacity: 0}, {opacity: 1}, "-=0.5");
 tl.fromTo(".sub", {opacity: 0}, {opacity: 1}, "-=1");
 
 const button = document.querySelector("button");
@@ -104,6 +105,6 @@ button.addEventListener("click", () => {
     animation.kill();
   }
   animation = gsap.timeline();
-  animation.to(controls, {duration: 1, autoRotateSpeed: 15 });
+  animation.to(controls, {duration: 1, autoRotateSpeed: 30, ease: "power2.in" });
   animation.to(controls, {duration: 1.5, autoRotateSpeed: 0.5 });
 });
