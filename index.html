@@ -6,6 +6,12 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/PaveunLogo-01.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;600&display=swap"
+    />
     <title>paveun.</title>
     <style>
       html,
@@ -14,6 +20,7 @@
         height: 100%;
         background: #040507;
         color: #f6f6f9;
+        font-family: 'Josefin Sans', sans-serif;
       }
 
       .loading {
@@ -41,6 +48,13 @@
         text-align: center;
         gap: 1rem;
         width: min(240px, 80vw);
+      }
+
+      .loading__text {
+        font-size: clamp(0.8rem, 2vw, 0.95rem);
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.68);
       }
 
       .loading__bar {
