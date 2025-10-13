@@ -10,8 +10,8 @@
   --color-accent: #f4170b;
   --color-accent-soft: rgba(244, 23, 11, 0.65);
   --shadow-soft: 0 24px 48px rgba(0, 0, 0, 0.35);
-  --hero-title-y: 30vh;
-  --hero-sub-y: 70vh;
+  --hero-title-y: 25vh;
+  --hero-sub-y: 75vh;
 }
 
 * {
