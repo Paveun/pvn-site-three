@@ -24,13 +24,71 @@ const TAGLINES = [
   "Never trust atoms; they make up everything",
 ];
 
-export function setRandomTagline(target) {
-  if (!target) {
-    return;
+const DEFAULT_OPTIONS = {
+  useApi: false,
+  apiFormat: 'text', // Supported values: 'text' or 'json'.
+};
+
+export const TAGLINE_SOURCE = { ...DEFAULT_OPTIONS };
+const API_ENDPOINT = 'https://icanhazdadjoke.com/';
+
+function pickRandomTagline() {
+  const index = Math.floor(Math.random() * TAGLINES.length);
+  return TAGLINES[index];
+}
+
+async function fetchTaglineFromApi(format) {
+  const acceptHeader = format === 'json' ? 'application/json' : 'text/plain';
+  const response = await fetch(API_ENDPOINT, {
+    headers: {
+      Accept: acceptHeader,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Joke API request failed with status ${response.status}`);
   }
 
-  const index = Math.floor(Math.random() * TAGLINES.length);
-  target.textContent = TAGLINES[index];
+  if (format === 'json') {
+    const payload = await response.json();
+    const joke = typeof payload?.joke === 'string' ? payload.joke : '';
+    if (!joke) {
+      throw new Error('Joke API returned an unexpected payload.');
+    }
+    return joke;
+  }
+
+  return response.text();
+}
+
+export async function setRandomTagline(target, options = {}) {
+  if (!target) {
+    return null;
+  }
+
+  const mergedOptions = {
+    ...DEFAULT_OPTIONS,
+    ...TAGLINE_SOURCE,
+    ...options,
+  };
+
+  let tagline = '';
+
+  if (mergedOptions.useApi) {
+    try {
+      tagline = await fetchTaglineFromApi(mergedOptions.apiFormat);
+    } catch (error) {
+      console.error('Failed to fetch tagline from API:', error);
+      tagline = '';
+    }
+  }
+
+  if (!tagline) {
+    tagline = pickRandomTagline();
+  }
+
+  target.textContent = tagline;
+  return tagline;
 }
 
 export function getTaglines() {

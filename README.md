@@ -29,5 +29,14 @@ Drops you into the shared dev shell defined in `flake.nix`, preloading Node.js, 
 ## Testing Notes
 No automated tests are in place yet. Manually verify the loading animation, model interaction, and navigation links after each change. Record any console warnings in your PR description for future follow-up.
 
+## Tagline Source Toggle
+The tagline under the title can be served from the local pun list or fetched from https://icanhazdadjoke.com.
+```js
+// src/main.js
+const USE_REMOTE_TAGLINES = true; // flip to false to use the bundled list
+const REMOTE_FORMAT = 'json';     // or 'text' to request plain text
+```
+When `USE_REMOTE_TAGLINES` is enabled the app issues a fetch request with the matching `Accept` header. If the network call fails, we fall back to the local collection automatically.
+
 ## Deployment
 The main branch is wired to Cloudflare Pages for automatic deployments. Merges to `main` trigger a new build; check Cloudflare’s dashboard for progress and purge the cache if assets change.

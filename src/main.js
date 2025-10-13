@@ -9,8 +9,16 @@ import { loadModel } from './app/loadModel.js';
 import { startRenderLoop } from './app/renderLoop.js';
 import { registerResizeHandler } from './app/registerResizeHandler.js';
 import { runIntroTimeline, attachSpinHandler } from './app/animations.js';
-import { setRandomTagline } from './utils/tagline.js';
+import { setRandomTagline, TAGLINE_SOURCE } from './utils/tagline.js';
 import { createLoadingOverlay } from './app/loadingOverlay.js';
+
+const USE_REMOTE_TAGLINES = true;
+const REMOTE_FORMAT = 'json';
+
+if (USE_REMOTE_TAGLINES) {
+  TAGLINE_SOURCE.useApi = true;
+  TAGLINE_SOURCE.apiFormat = REMOTE_FORMAT;
+}
 
 function init() {
   const canvas = document.querySelector('.webgl');
