@@ -13,7 +13,7 @@ import { setRandomTagline, TAGLINE_SOURCE } from './utils/tagline.js';
 import { createLoadingOverlay } from './app/loadingOverlay.js';
 import { createLoadingManager, createGltfLoader } from './app/createLoadingManager.js';
 
-const USE_REMOTE_TAGLINES = false;
+const USE_REMOTE_TAGLINES = true;
 const REMOTE_FORMAT = 'json';
 
 if (USE_REMOTE_TAGLINES) {
