@@ -20,18 +20,22 @@ export function createLoadingOverlay() {
     }
   }
 
-  function finish(onHidden) {
+  function finish({ onFadeStart, onHidden } = {}) {
     if (!overlay) {
+      onFadeStart?.();
       onHidden?.();
       return;
     }
 
     if (hidden) {
+      onFadeStart?.();
       onHidden?.();
       return;
     }
 
     hidden = true;
+
+    onFadeStart?.();
 
     const handleTransitionEnd = (event) => {
       if (event.target !== overlay) {

@@ -48,7 +48,9 @@ function init() {
       loadingOverlay.setProgress(1);
       loadingOverlay.setStatus('Ready');
       window.setTimeout(() => {
-        loadingOverlay.finish(beginIntro);
+        loadingOverlay.finish({
+          onFadeStart: beginIntro,
+        });
       }, 150);
     },
   });
@@ -111,7 +113,9 @@ function init() {
     console.error('Failed to load model', error);
     loadingOverlay.showError('Model failed to load');
     window.setTimeout(() => {
-      loadingOverlay.finish(beginIntro);
+      loadingOverlay.finish({
+        onFadeStart: beginIntro,
+      });
     }, 500);
   });
 }
