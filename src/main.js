@@ -12,7 +12,7 @@ import { runIntroTimeline, attachSpinHandler } from './app/animations.js';
 import { setRandomTagline, TAGLINE_SOURCE } from './utils/tagline.js';
 import { createLoadingOverlay } from './app/loadingOverlay.js';
 
-const USE_REMOTE_TAGLINES = true;
+const USE_REMOTE_TAGLINES = false;
 const REMOTE_FORMAT = 'json';
 
 if (USE_REMOTE_TAGLINES) {
@@ -41,22 +41,44 @@ function init() {
   addSceneLighting(scene);
 
   const renderer = createRenderer(canvas, sizes);
-  const controls = createControls(camera, canvas);
+
+  const motionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const motionPreferences = {
+    reduceMotion: motionMediaQuery.matches,
+  };
+
+  const controls = createControls(camera, canvas, {
+    autoRotate: !motionPreferences.reduceMotion,
+  });
+
+  const applyMotionPreference = (shouldReduce) => {
+    motionPreferences.reduceMotion = shouldReduce;
+    controls.autoRotate = !shouldReduce;
+    controls.autoRotateSpeed = shouldReduce ? 0 : 0.5;
+  };
+
+  if (motionMediaQuery.addEventListener) {
+    motionMediaQuery.addEventListener('change', (event) => {
+      applyMotionPreference(event.matches);
+    });
+  } else if (motionMediaQuery.addListener) {
+    motionMediaQuery.addListener((event) => {
+      applyMotionPreference(event.matches);
+    });
+  }
 
   registerResizeHandler({ sizes, camera, renderer });
 
   startRenderLoop(renderer, scene, camera, controls);
 
   const spinButton = document.querySelector('.button.spin');
-  if (spinButton) {
-    attachSpinHandler(spinButton, controls);
-  }
+  attachSpinHandler(spinButton, controls, motionPreferences);
 
   const taglineTarget = document.querySelector('.sub');
   setRandomTagline(taglineTarget);
 
   const beginIntro = () => {
-    runIntroTimeline(camera);
+    runIntroTimeline(camera, motionPreferences);
   };
 
   loadModel(scene, 'space', {
