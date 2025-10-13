@@ -10,6 +10,7 @@ import { startRenderLoop } from './app/renderLoop.js';
 import { registerResizeHandler } from './app/registerResizeHandler.js';
 import { runIntroTimeline, attachSpinHandler } from './app/animations.js';
 import { setRandomTagline } from './utils/tagline.js';
+import { createLoadingOverlay } from './app/loadingOverlay.js';
 
 function init() {
   const canvas = document.querySelector('.webgl');
@@ -17,6 +18,8 @@ function init() {
     console.error('Missing .webgl canvas element.');
     return;
   }
+
+  const loadingOverlay = createLoadingOverlay();
 
   const scene = createScene();
   const sizes = {
@@ -35,7 +38,6 @@ function init() {
   registerResizeHandler({ sizes, camera, renderer });
 
   startRenderLoop(renderer, scene, camera, controls);
-  runIntroTimeline(camera);
 
   const spinButton = document.querySelector('.button.spin');
   if (spinButton) {
@@ -45,9 +47,29 @@ function init() {
   const taglineTarget = document.querySelector('.sub');
   setRandomTagline(taglineTarget);
 
-  loadModel(scene).catch((error) => {
-    console.error('Failed to load model', error);
-  });
+  const beginIntro = () => {
+    runIntroTimeline(camera);
+  };
+
+  loadModel(scene, 'space', {
+    onProgress: (value) => {
+      loadingOverlay.setProgress(value);
+    },
+  })
+    .then(() => {
+      loadingOverlay.setProgress(1);
+      loadingOverlay.setStatus('Ready');
+      window.setTimeout(() => {
+        loadingOverlay.finish(beginIntro);
+      }, 150);
+    })
+    .catch((error) => {
+      console.error('Failed to load model', error);
+      loadingOverlay.showError('Model failed to load');
+      window.setTimeout(() => {
+        loadingOverlay.finish(beginIntro);
+      }, 500);
+    });
 }
 
 init();
