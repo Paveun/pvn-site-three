@@ -1,9 +1,9 @@
 import { Box3, Vector3 } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-const loader = new GLTFLoader();
+const fallbackLoader = new GLTFLoader();
 
-export function loadModel(scene, modelName = 'space', { onProgress } = {}) {
+export function loadModel(scene, modelName = 'space', { loader = fallbackLoader, onProgress } = {}) {
   return new Promise((resolve, reject) => {
     loader.load(
       `models/${modelName}/scene.gltf`,
@@ -15,7 +15,10 @@ export function loadModel(scene, modelName = 'space', { onProgress } = {}) {
         object.position.sub(center);
         scene.add(object);
 
-        onProgress?.(1);
+        if (onProgress) {
+          onProgress(1);
+        }
+
         resolve(object);
       },
       (event) => {

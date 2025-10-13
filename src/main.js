@@ -11,6 +11,7 @@ import { registerResizeHandler } from './app/registerResizeHandler.js';
 import { runIntroTimeline, attachSpinHandler } from './app/animations.js';
 import { setRandomTagline, TAGLINE_SOURCE } from './utils/tagline.js';
 import { createLoadingOverlay } from './app/loadingOverlay.js';
+import { createLoadingManager, createGltfLoader } from './app/createLoadingManager.js';
 
 const USE_REMOTE_TAGLINES = false;
 const REMOTE_FORMAT = 'json';
@@ -28,6 +29,31 @@ function init() {
   }
 
   const loadingOverlay = createLoadingOverlay();
+  let beginIntro = () => {};
+
+  const loadingManager = createLoadingManager({
+    onStart: () => {
+      loadingOverlay.setStatus('Loading...');
+      loadingOverlay.setProgress(0);
+    },
+    onProgress: (_, loaded, total) => {
+      const ratio = total ? loaded / total : 0;
+      loadingOverlay.setProgress(ratio);
+    },
+    onError: (item) => {
+      console.error(`Failed to load asset: ${item}`);
+      loadingOverlay.showError('Asset failed to load');
+    },
+    onLoad: () => {
+      loadingOverlay.setProgress(1);
+      loadingOverlay.setStatus('Ready');
+      window.setTimeout(() => {
+        loadingOverlay.finish(beginIntro);
+      }, 150);
+    },
+  });
+
+  const gltfLoader = createGltfLoader(loadingManager);
 
   const scene = createScene();
   const sizes = {
@@ -77,29 +103,17 @@ function init() {
   const taglineTarget = document.querySelector('.sub');
   setRandomTagline(taglineTarget);
 
-  const beginIntro = () => {
+  beginIntro = () => {
     runIntroTimeline(camera, motionPreferences);
   };
 
-  loadModel(scene, 'space', {
-    onProgress: (value) => {
-      loadingOverlay.setProgress(value);
-    },
-  })
-    .then(() => {
-      loadingOverlay.setProgress(1);
-      loadingOverlay.setStatus('Ready');
-      window.setTimeout(() => {
-        loadingOverlay.finish(beginIntro);
-      }, 150);
-    })
-    .catch((error) => {
-      console.error('Failed to load model', error);
-      loadingOverlay.showError('Model failed to load');
-      window.setTimeout(() => {
-        loadingOverlay.finish(beginIntro);
-      }, 500);
-    });
+  loadModel(scene, 'space', { loader: gltfLoader }).catch((error) => {
+    console.error('Failed to load model', error);
+    loadingOverlay.showError('Model failed to load');
+    window.setTimeout(() => {
+      loadingOverlay.finish(beginIntro);
+    }, 500);
+  });
 }
 
 init();
