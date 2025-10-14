@@ -26,10 +26,10 @@ export function runIntroTimeline({ camera, controls, rotationState, reduceMotion
   rotationState.current = 0;
 
   timeline
-    .set(camera.position, { z: 2.4 })
+    .set(camera.position, { z: 0 })
     .set(rotationState, { current: rotationState.base * 2.5 })
-    .to(rotationState, { current: rotationState.base, duration: 1.6, ease: 'sine.out' })
-    .to(camera.position, { z: 5, duration: 1.6, ease: 'power2.out' }, '<')
+    .to(rotationState, { current: rotationState.base, duration: 2.4, ease: 'sine.out' })
+    .to(camera.position, { z: 4, duration: 2.4, ease: 'power2.out' }, '<')
     .fromTo('nav', { y: '-360%', opacity: 0 }, { y: '0%', opacity: 1, duration: 1.1 }, '-=1.1')
     .fromTo('.title', { opacity: 0 }, { opacity: 1, duration: 0.8 }, '-=0.7')
     .fromTo('.sub', { opacity: 0 }, { opacity: 1, duration: 0.8 }, '-=0.6')
