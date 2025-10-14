@@ -1,4 +1,4 @@
-import { Box3, Vector3 } from 'three';
+import { Box3, Group, Vector3 } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 const fallbackLoader = new GLTFLoader();
@@ -12,14 +12,16 @@ export function loadModel(scene, modelName = 'space', { loader = fallbackLoader,
         const box = new Box3().setFromObject(object);
         const center = box.getCenter(new Vector3());
 
+        const pivot = new Group();
         object.position.sub(center);
-        scene.add(object);
+        pivot.add(object);
+        scene.add(pivot);
 
         if (onProgress) {
           onProgress(1);
         }
 
-        resolve(object);
+        resolve(pivot);
       },
       (event) => {
         if (!onProgress) {

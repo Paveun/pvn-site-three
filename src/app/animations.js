@@ -17,8 +17,8 @@ export function runIntroTimeline(camera, { reduceMotion = false } = {}) {
     .fromTo('.sub', { opacity: 0 }, { opacity: 1 }, '-=1');
 }
 
-export function attachSpinHandler(button, controls, motionPreferences = {}) {
-  if (!button) {
+export function attachSpinHandler(button, rotationState, motionPreferences = {}) {
+  if (!button || !rotationState) {
     return;
   }
 
@@ -33,24 +33,19 @@ export function attachSpinHandler(button, controls, motionPreferences = {}) {
     const reduceMotion = Boolean(motionPreferences.reduceMotion);
 
     if (reduceMotion) {
-      controls.autoRotate = true;
-      controls.autoRotateSpeed = 0.5;
-      window.setTimeout(() => {
-        controls.autoRotate = false;
-        controls.autoRotateSpeed = 0;
-      }, 1500);
       return;
     }
 
     spinTimeline = gsap.timeline();
-    spinTimeline.to(controls, {
+    spinTimeline.to(rotationState, {
       duration: 1,
-      autoRotateSpeed: 30,
+      current: rotationState.base * 8,
       ease: 'power2.in',
     });
-    spinTimeline.to(controls, {
-      duration: 1.5,
-      autoRotateSpeed: 0.5,
+    spinTimeline.to(rotationState, {
+      duration: 1.6,
+      current: rotationState.base,
+      ease: 'power2.out',
     });
   });
 }

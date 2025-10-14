@@ -30,6 +30,12 @@ function init() {
 
   const loadingOverlay = createLoadingOverlay();
   let beginIntro = () => {};
+  let activeModel = null;
+
+  const rotationState = {
+    base: 0.35,
+    current: 0.35,
+  };
 
   const loadingManager = createLoadingManager({
     onStart: () => {
@@ -75,14 +81,11 @@ function init() {
     reduceMotion: motionMediaQuery.matches,
   };
 
-  const controls = createControls(camera, canvas, {
-    autoRotate: !motionPreferences.reduceMotion,
-  });
+  const controls = createControls(camera, canvas);
 
   const applyMotionPreference = (shouldReduce) => {
     motionPreferences.reduceMotion = shouldReduce;
-    controls.autoRotate = !shouldReduce;
-    controls.autoRotateSpeed = shouldReduce ? 0 : 0.5;
+    rotationState.current = shouldReduce ? 0 : rotationState.base;
   };
 
   if (motionMediaQuery.addEventListener) {
@@ -95,12 +98,22 @@ function init() {
     });
   }
 
+  applyMotionPreference(motionPreferences.reduceMotion);
+
   registerResizeHandler({ sizes, camera, renderer });
 
-  startRenderLoop(renderer, scene, camera, controls);
+  startRenderLoop(renderer, scene, camera, controls, {
+    onFrame: (delta) => {
+      if (rotationState.current === 0 || !activeModel) {
+        return;
+      }
+
+      activeModel.rotation.y += rotationState.current * delta;
+    },
+  });
 
   const spinButton = document.querySelector('.button.spin');
-  attachSpinHandler(spinButton, controls, motionPreferences);
+  attachSpinHandler(spinButton, rotationState, motionPreferences);
 
   const taglineTarget = document.querySelector('.sub');
   setRandomTagline(taglineTarget);
@@ -109,15 +122,19 @@ function init() {
     runIntroTimeline(camera, motionPreferences);
   };
 
-  loadModel(scene, 'space', { loader: gltfLoader }).catch((error) => {
-    console.error('Failed to load model', error);
-    loadingOverlay.showError('Model failed to load');
-    window.setTimeout(() => {
-      loadingOverlay.finish({
-        onFadeStart: beginIntro,
-      });
-    }, 500);
-  });
+  loadModel(scene, 'space', { loader: gltfLoader })
+    .then((model) => {
+      activeModel = model;
+    })
+    .catch((error) => {
+      console.error('Failed to load model', error);
+      loadingOverlay.showError('Model failed to load');
+      window.setTimeout(() => {
+        loadingOverlay.finish({
+          onFadeStart: beginIntro,
+        });
+      }, 500);
+    });
 }
 
 init();
