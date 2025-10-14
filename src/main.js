@@ -119,7 +119,12 @@ function init() {
   setRandomTagline(taglineTarget);
 
   beginIntro = () => {
-    runIntroTimeline(camera, motionPreferences);
+    runIntroTimeline({
+      camera,
+      controls,
+      rotationState,
+      reduceMotion: motionPreferences.reduceMotion,
+    });
   };
 
   loadModel(scene, 'space', { loader: gltfLoader })

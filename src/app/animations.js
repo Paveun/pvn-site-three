@@ -1,20 +1,46 @@
 import gsap from 'gsap';
 
-export function runIntroTimeline(camera, { reduceMotion = false } = {}) {
-  if (reduceMotion) {
-    gsap.set(camera.position, { z: 5 });
-    gsap.set('nav', { y: '0%' });
-    gsap.set('.title', { opacity: 1 });
-    gsap.set('.sub', { opacity: 1 });
+export function runIntroTimeline({ camera, controls, rotationState, reduceMotion = false }) {
+  if (!camera) {
     return null;
   }
 
-  return gsap
-    .timeline({ defaults: { duration: 1 } })
-    .fromTo(camera.position, { z: 0 }, { z: 5, duration: 2 })
-    .fromTo('nav', { y: '-360%' }, { y: '0%' }, '-=1.5')
-    .fromTo('.title', { opacity: 0 }, { opacity: 1 }, '-=0.5')
-    .fromTo('.sub', { opacity: 0 }, { opacity: 1 }, '-=1');
+  const timeline = gsap.timeline({ defaults: { duration: 1, ease: 'power2.out' } });
+
+  if (reduceMotion) {
+    rotationState.current = 0;
+    gsap.set(camera.position, { z: 5 });
+    gsap.to('nav', { y: '0%', duration: 0.4, overwrite: true });
+    gsap.to(['.title', '.sub'], { opacity: 1, duration: 0.4, overwrite: true });
+    if (controls) {
+      controls.enabled = true;
+      controls.update();
+    }
+    return timeline;
+  }
+
+  if (controls) {
+    controls.enabled = false;
+  }
+
+  rotationState.current = 0;
+
+  timeline
+    .set(camera.position, { z: 2.4 })
+    .set(rotationState, { current: rotationState.base * 2.5 })
+    .to(rotationState, { current: rotationState.base, duration: 1.6, ease: 'sine.out' })
+    .to(camera.position, { z: 5, duration: 1.6, ease: 'power2.out' }, '<')
+    .fromTo('nav', { y: '-360%', opacity: 0 }, { y: '0%', opacity: 1, duration: 1.1 }, '-=1.1')
+    .fromTo('.title', { opacity: 0 }, { opacity: 1, duration: 0.8 }, '-=0.7')
+    .fromTo('.sub', { opacity: 0 }, { opacity: 1, duration: 0.8 }, '-=0.6')
+    .call(() => {
+      if (controls) {
+        controls.enabled = true;
+        controls.update();
+      }
+    });
+
+  return timeline;
 }
 
 export function attachSpinHandler(button, rotationState, motionPreferences = {}) {
@@ -30,22 +56,24 @@ export function attachSpinHandler(button, rotationState, motionPreferences = {})
       spinTimeline = null;
     }
 
-    const reduceMotion = Boolean(motionPreferences.reduceMotion);
-
-    if (reduceMotion) {
+    spinTimeline = gsap.timeline();
+    if (motionPreferences.reduceMotion) {
+      spinTimeline
+        .to(rotationState, { duration: 0.4, current: rotationState.base * 1.5, ease: 'power1.out' })
+        .to(rotationState, { duration: 0.6, current: 0, ease: 'power1.inOut' });
       return;
     }
 
-    spinTimeline = gsap.timeline();
-    spinTimeline.to(rotationState, {
-      duration: 1,
-      current: rotationState.base * 8,
-      ease: 'power2.in',
-    });
-    spinTimeline.to(rotationState, {
-      duration: 1.6,
-      current: rotationState.base,
-      ease: 'power2.out',
-    });
+    spinTimeline
+      .to(rotationState, {
+        duration: 1,
+        current: rotationState.base * 8,
+        ease: 'power2.in',
+      })
+      .to(rotationState, {
+        duration: 1.6,
+        current: rotationState.base,
+        ease: 'power2.out',
+      });
   });
 }
